@@ -242,7 +242,7 @@ const StudentDashboard: React.FC = () => {
                           <div>
                             <div className="text-sm font-medium text-gray-900">{application.courseTitle}</div>
                             {course && (
-                              <div className="text-sm text-gray-500">{course.duration} • ${course.price}</div>
+                              <div className="text-sm text-gray-500">{course.duration} • ₹{course.price}</div>
                             )}
                           </div>
                         </td>
@@ -325,7 +325,7 @@ const StudentDashboard: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-1">
                         <DollarSign className="h-5 w-5 text-green-600" />
-                        <span className="text-xl font-bold text-green-600">${course.price}</span>
+                        <span className="text-xl font-bold text-green-600">₹{course.price}</span>
                       </div>
                       <button
                         onClick={() => handleApplyCourse(course.id)}

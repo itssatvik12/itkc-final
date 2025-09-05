@@ -323,7 +323,7 @@ const InstitutionDashboard: React.FC = () => {
                         <p className="text-gray-600 mb-3 line-clamp-3">{course.description}</p>
                         <div className="text-sm text-gray-500 mb-4">
                           <p>Duration: {course.duration}</p>
-                          <p>Price: ${course.price}</p>
+                          <p>Price: ₹{course.price}</p>
                         </div>
                         <button
                           onClick={() => handleApplyForCourse(course.id, course.title)}
@@ -411,7 +411,7 @@ const InstitutionDashboard: React.FC = () => {
                         <p className="text-gray-600 mb-3 line-clamp-3">{course.description}</p>
                         <div className="text-sm text-gray-500 mb-4">
                           <p>Duration: {course.duration}</p>
-                          <p>Price: ${course.price}</p>
+                          <p>Price: ₹{course.price}</p>
                           <p>Students: {course.enrolledStudents || 0}/20</p>
                           {(course.enrolledStudents || 0) >= 18 && (
                             <p className="text-orange-600 font-medium">Nearly Full!</p>

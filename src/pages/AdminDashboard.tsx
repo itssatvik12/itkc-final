@@ -661,7 +661,7 @@ const AdminDashboard: React.FC = () => {
                         <p className="text-gray-600 mb-3 line-clamp-3">{course.description}</p>
                         <div className="text-sm text-gray-500 mb-4">
                           <p>Duration: {course.duration}</p>
-                          <p>Price: ${course.price}</p>
+                          <p>Price: ₹{course.price}</p>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-blue-600">
@@ -788,7 +788,7 @@ const AdminDashboard: React.FC = () => {
                               <div className="text-sm text-gray-900">{course.institutionName}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">${course.price}</div>
+                              <div className="text-sm text-gray-900">₹{course.price}</div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-900">{course.enrolledStudents}/20</div>
@@ -950,7 +950,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
                   <input
                     type="number"
                     value={courseForm.price}
