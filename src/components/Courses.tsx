@@ -83,7 +83,7 @@ const Courses: React.FC = () => {
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1">
-                      <DollarSign className="h-5 w-5 text-green-600" />
+                      
                       <span className="text-xl font-bold text-green-600">₹{course.price}</span>
                     </div>
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
