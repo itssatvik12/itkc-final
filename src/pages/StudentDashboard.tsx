@@ -4,10 +4,13 @@ import { BookOpen, Clock, DollarSign, Users, CheckCircle, Plus, AlertCircle, Fil
 import { db } from '../config/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Course, StudentCourseApplication } from '../types';
+import PaymentModel from '../components/PaymentModel';
 
 const StudentDashboard: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [myApplications, setMyApplications] = useState<StudentCourseApplication[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const { userData } = useAuth();
 
@@ -49,11 +52,11 @@ const StudentDashboard: React.FC = () => {
     fetchData();
   }, [userData]);
 
-  const handleApplyCourse = async (courseId: string) => {
+  const handleApplyCourse = (course: Course) => {
     if (!userData) return;
 
     // Check if already applied
-    const alreadyApplied = myApplications.some(app => app.courseId === courseId);
+    const alreadyApplied = myApplications.some(app => app.courseId === course.id);
     if (alreadyApplied) {
       alert('You have already applied for this course.');
       return;
@@ -66,7 +69,6 @@ const StudentDashboard: React.FC = () => {
     }
 
     // Check course enrollment limit
-    const course = courses.find(c => c.id === courseId);
     if (course && course.enrolledStudents >= 20) {
       alert('This course has reached its maximum enrollment limit of 20 students.');
       return;
@@ -74,23 +76,42 @@ const StudentDashboard: React.FC = () => {
 
     try {
       // Create student course application
+      setSelectedCourse(course);
+      setShowPaymentModal(true);
+    } catch (error) {
+      console.error('Error opening payment modal:', error);
+      alert('Failed to open payment form. Please try again.');
+    }
+  };
+
+  const handlePaymentSuccess = async () => {
+    if (!userData || !selectedCourse) return;
+
+    try {
       const applicationData = {
-        courseId,
-        courseTitle: course?.title || '',
+        courseId: selectedCourse.id,
+        courseTitle: selectedCourse.title,
         studentId: userData.id,
         studentName: userData.name,
         studentEmail: userData.email,
         studentCategory: userData.category,
-        institutionId: course?.institutionId || '',
+        institutionId: selectedCourse.institutionId,
         status: 'pending' as const,
-        appliedAt: new Date()
+        appliedAt: new Date(),
+        paymentStatus: ['SC', 'ST'].includes(userData.category) ? 'free' : 'paid',
+        amountPaid: ['SC', 'ST'].includes(userData.category) ? 0 : selectedCourse.price
       };
 
       const docRef = await addDoc(collection(db, 'studentCourseApplications'), applicationData);
       const newApplication = { id: docRef.id, ...applicationData } as StudentCourseApplication;
       setMyApplications(prev => [...prev, newApplication]);
       
-      alert('Application submitted successfully! The institution will review your application.');
+      const categoryMessage = ['SC', 'ST'].includes(userData.category) 
+        ? 'Application submitted successfully for free! The institution will review your application.'
+        : `Payment successful! Application submitted for ₹${selectedCourse.price}. The institution will review your application.`;
+      
+      alert(categoryMessage);
+      setSelectedCourse(null);
     } catch (error) {
       console.error('Error applying for course:', error);
       alert('Failed to submit application. Please try again.');
@@ -324,16 +345,30 @@ const StudentDashboard: React.FC = () => {
                     
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-1">
-                        <span className="text-xl font-bold text-green-600">₹{course.price}</span>
+                        
+                        <div className="flex flex-col">
+                          {['SC', 'ST', 'EWS'].includes(userData?.category || '') ? (
+                            <>
+                              <span className="text-xl font-bold text-green-600">FREE</span>
+                              <span className="text-xs text-green-600">({userData?.category} Benefit)</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-xl font-bold text-green-600">₹{course.price}</span>
+                              <span className="text-xs text-gray-500">({userData?.category} Category)</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <button
-                        onClick={() => handleApplyCourse(course.id)}
+                        onClick={() => handleApplyCourse(course)}
                         disabled={!canApplyForMore || course.enrolledStudents >= 20}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Plus className="h-4 w-4" />
                         <span>
-                          {course.enrolledStudents >= 20 ? 'Full' : 'Apply'}
+                          {course.enrolledStudents >= 20 ? 'Full' : 
+                           ['SC', 'ST'].includes(userData?.category || '') ? 'Enroll Free' : 'Enroll Now'}
                         </span>
                       </button>
                     </div>
@@ -352,6 +387,20 @@ const StudentDashboard: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Payment Modal */}
+      {selectedCourse && (
+        <PaymentModel
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setSelectedCourse(null);
+          }}
+          course={selectedCourse}
+          studentCategory={userData?.category || 'GEN'}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 };

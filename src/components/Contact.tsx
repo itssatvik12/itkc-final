@@ -87,8 +87,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Address</h4>
-                  <a 
-                    href="https://maps.google.com/?q=123+Education+Street,+Learning+City,+LC+12345" 
+                  <a  
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 transition-colors"

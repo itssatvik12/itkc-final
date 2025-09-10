@@ -63,7 +63,6 @@ export interface Course {
   maxEnrollment: number;
   approved: boolean;
   createdAt: Date;
-  content?: string;
 }
 
 export interface StudentCourseApplication {
@@ -79,6 +78,8 @@ export interface StudentCourseApplication {
   appliedAt: Date;
   reviewedAt?: Date;
   reviewedBy?: string; // Institution ID
+  paymentStatus?: 'free' | 'paid' | 'pending';
+  amountPaid?: number;
 }
 
 export interface Feedback {
